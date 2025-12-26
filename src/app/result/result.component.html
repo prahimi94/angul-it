@@ -1,0 +1,54 @@
+<section class="result-shell">
+  <div class="result-header">
+    <p class="eyebrow">Results</p>
+    <div class="headline">
+      <div class="checkmark" aria-hidden="true">
+        <svg viewBox="0 0 52 52" role="img">
+          <circle cx="26" cy="26" r="25" />
+          <path d="M16 27.5l6.2 6.2L36 20.2" />
+        </svg>
+      </div>
+      <div>
+        <h1>Verified. You are not a bot.</h1>
+        <p class="lead">
+          Nice work. Your responses are saved in this session. You can start a new run anytime.
+        </p>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat-card">
+        <p class="stat-label">Success rate</p>
+        <p class="stat-value">{{ successRate() }}%</p>
+        <div class="stat-bar">
+          <span [style.width.%]="successRate()"></span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">Correct answers</p>
+        <p class="stat-value">{{ correctCount() }}</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">Incorrect answers</p>
+        <p class="stat-value">{{ incorrectCount() }}</p>
+      </div>
+    </div>
+    <button class="primary" type="button" (click)="startOver()">Start a new challenge</button>
+  </div>
+
+  <div class="result-card">
+    <h2>Challenge breakdown</h2>
+    <div class="result-grid">
+      <div class="result-item" *ngFor="let challenge of session().challenges; index as i">
+        <p class="label">Stage {{ i + 1 }}</p>
+        <p class="prompt">{{ challenge.prompt }}</p>
+        <p class="answer">
+          <span>Answer:</span>
+          {{ formatAnswer(session().progress[challenge.id]?.answer ?? null) }}
+        </p>
+        <p class="status" [class.pass]="isCorrect(challenge.id)">
+          {{ isCorrect(challenge.id) ? 'Passed' : 'Needs review' }}
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

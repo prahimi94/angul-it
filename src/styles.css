@@ -1,1 +1,40 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --surface: #f7f3ea;
+  --ink-strong: #1b2f30;
+  --ink-muted: #3b5a58;
+  --ink-soft: #6b7d7a;
+  --accent-strong: #18534d;
+  --error: #b4402e;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Gill Sans", "Trebuchet MS", "Verdana", sans-serif;
+  color: var(--ink-strong);
+  background:
+    radial-gradient(circle at 10% 20%, rgba(24, 83, 77, 0.12), transparent 45%),
+    radial-gradient(circle at 80% 10%, rgba(252, 210, 154, 0.3), transparent 50%),
+    radial-gradient(circle at 60% 80%, rgba(48, 112, 103, 0.12), transparent 55%),
+    var(--surface);
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Palatino Linotype", "Book Antiqua", serif;
+  letter-spacing: 0.02em;
+}
+
+button,
+input {
+  font-family: inherit;
+}
+
+a {
+  color: inherit;
+}

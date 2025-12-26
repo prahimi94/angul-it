@@ -1,0 +1,58 @@
+<section class="challenge-shell" *ngIf="currentChallenge() as challenge">
+  <div class="challenge-header">
+    <div>
+      <p class="eyebrow">Challenge {{ currentIndex() + 1 }} of {{ totalSteps() }}</p>
+      <h1>{{ challenge.prompt }}</h1>
+    </div>
+    <div class="progress">
+      <span>Set: {{ session().setId }}</span>
+      <span>Session saved</span>
+    </div>
+  </div>
+
+  <div class="challenge-card" [@stepTransition]>
+    <form [formGroup]="form">
+      <div class="image-select" *ngIf="imageChallenge() as image">
+        <p class="instructions">Tap each tile that matches the label.</p>
+        <div class="image-grid">
+          <button
+            class="image-tile"
+            type="button"
+            *ngFor="let option of image.options"
+            [class.selected]="isSelected(option.id)"
+            (click)="toggleSelection(option.id)"
+          >
+            <span class="tile-label">{{ option.label }}</span>
+            <span class="tile-detail">{{ option.detail }}</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="math-select" *ngIf="mathChallenge() as math">
+        <p class="equation">{{ math.equation }}</p>
+        <label class="field">
+          <span>Answer</span>
+          <input type="number" formControlName="answer" placeholder="Enter result" />
+        </label>
+      </div>
+
+      <div class="text-select" *ngIf="textChallenge() as text">
+        <label class="field">
+          <span>Response</span>
+          <input type="text" formControlName="answer" [placeholder]="text.placeholder" />
+        </label>
+      </div>
+    </form>
+
+    <p class="error" *ngIf="errorMessage() as message">{{ message }}</p>
+
+    <div class="actions">
+      <button class="ghost" type="button" (click)="goBack()" [disabled]="currentIndex() === 0">
+        Back
+      </button>
+      <button class="primary" type="button" (click)="goNext()">
+        {{ currentIndex() + 1 === totalSteps() ? 'Finish' : 'Next' }}
+      </button>
+    </div>
+  </div>
+</section>
