@@ -40,6 +40,7 @@ export class CaptchaComponent implements OnDestroy {
   private lastChallengeId: string | null = null;
   private lastSessionId: string | null = null;
   private attemptedSubmit = false;
+  private lastErrorMessage: string | null = null;
 
   readonly session = this.state.session;
   readonly currentChallenge = this.state.currentChallenge;
@@ -71,6 +72,7 @@ export class CaptchaComponent implements OnDestroy {
         this.lastChallengeId = challenge.id;
         this.lastSessionId = sessionId;
         this.attemptedSubmit = false;
+        this.lastErrorMessage = null;
         this.form = this.buildForm(challenge);
         this.formSubscription?.unsubscribe();
         this.formSubscription = this.form.valueChanges.subscribe(() => this.persistProgress());
@@ -118,8 +120,11 @@ export class CaptchaComponent implements OnDestroy {
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.lastErrorMessage = this.resolveErrorMessage(challenge);
       return;
     }
+
+    this.lastErrorMessage = null;
 
     if (this.currentIndex() + 1 >= this.totalSteps()) {
       this.state.markCompleted();
@@ -145,13 +150,16 @@ export class CaptchaComponent implements OnDestroy {
 
   errorMessage(): string | null {
     const challenge = this.currentChallenge();
-    if (!challenge) {
+    if (!challenge || !this.attemptedSubmit) {
       return null;
     }
+    return this.lastErrorMessage;
+  }
 
+  private resolveErrorMessage(challenge: Challenge): string | null {
     if (challenge.type === 'image') {
       const control = this.form.get('selections');
-      if (!control || !this.attemptedSubmit || !control.errors) {
+      if (!control || !control.errors) {
         return null;
       }
       if (control.errors['required']) {
@@ -164,7 +172,7 @@ export class CaptchaComponent implements OnDestroy {
 
     if (challenge.type === 'math') {
       const control = this.form.get('answer');
-      if (!control || !this.attemptedSubmit || !control.errors) {
+      if (!control || !control.errors) {
         return null;
       }
       if (control.errors['required']) {
@@ -177,7 +185,7 @@ export class CaptchaComponent implements OnDestroy {
 
     if (challenge.type === 'text') {
       const control = this.form.get('answer');
-      if (!control || !this.attemptedSubmit || !control.errors) {
+      if (!control || !control.errors) {
         return null;
       }
       if (control.errors['required']) {

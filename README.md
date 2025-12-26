@@ -2,6 +2,29 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.11.
 
+## Overview
+
+AngulIt is a multi-step captcha flow (image, math, text) with session persistence and a results dashboard.
+
+## Features
+
+- Image, math, and text challenges with per-step validation
+- Attempts (correct/incorrect) are recorded per step
+- Verification outcome based on success rate (default: 70%)
+- Randomized options in the first image step
+- Randomized math equation and text prompt per session
+
+## Project Structure
+
+```
+src/app/
+  core/        # App shell, routes, config
+  components/  # Home, Captcha, Result pages
+  services/    # State and session logic
+  models/      # Types and interfaces
+  guards/      # Route guards
+```
+
 ## Development server
 
 To start a local development server, run:
@@ -53,6 +76,11 @@ ng e2e
 ```
 
 Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+
+## Configuration Notes
+
+- Success threshold is defined in `src/app/components/result/result.component.ts` (`minSuccessRate`).
+- Math input accepts only English digits (0-9).
 
 ## Additional Resources
 
