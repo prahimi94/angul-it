@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { ResultComponent } from './result.component';
-import { CaptchaStateService } from '../services/captcha-state.service';
+import { CaptchaStateService } from '../../services/captcha-state.service';
 
 describe('ResultComponent', () => {
   beforeEach(async () => {

@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { ChallengeAttempt } from '../models/captcha.models';
-import { CaptchaStateService } from '../services/captcha-state.service';
+import { ChallengeAttempt } from '../../models/captcha.models';
+import { CaptchaStateService } from '../../services/captcha-state.service';
 
 @Component({
   selector: 'app-result',

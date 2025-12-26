@@ -12,8 +12,8 @@ import {
 import { Router } from '@angular/router';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Subscription } from 'rxjs';
-import { CaptchaStateService } from '../services/captcha-state.service';
-import { Challenge, ChallengeProgress } from '../models/captcha.models';
+import { CaptchaStateService } from '../../services/captcha-state.service';
+import { Challenge, ChallengeProgress } from '../../models/captcha.models';
 
 @Component({
   selector: 'app-captcha',

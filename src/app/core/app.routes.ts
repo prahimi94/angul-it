@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
-import { CaptchaComponent } from './captcha/captcha.component';
-import { HomeComponent } from './home/home.component';
-import { ResultComponent } from './result/result.component';
-import { resultGuard } from './guards/result.guard';
+import { CaptchaComponent } from '../components/captcha/captcha.component';
+import { HomeComponent } from '../components/home/home.component';
+import { ResultComponent } from '../components/result/result.component';
+import { resultGuard } from '../guards/result.guard';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },

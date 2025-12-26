@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { CaptchaStateService } from '../services/captcha-state.service';
+import { CaptchaStateService } from '../../services/captcha-state.service';
 
 @Component({
   selector: 'app-home',
