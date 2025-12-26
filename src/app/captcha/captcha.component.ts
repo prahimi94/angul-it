@@ -37,6 +37,9 @@ export class CaptchaComponent implements OnDestroy {
   private readonly state = inject(CaptchaStateService);
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
+  private lastChallengeId: string | null = null;
+  private lastSessionId: string | null = null;
+  private attemptedSubmit = false;
 
   readonly session = this.state.session;
   readonly currentChallenge = this.state.currentChallenge;
@@ -62,8 +65,12 @@ export class CaptchaComponent implements OnDestroy {
     this.state.ensureSession();
 
     effect(() => {
+      const sessionId = this.session().sessionId;
       const challenge = this.currentChallenge();
-      if (challenge) {
+      if (challenge && (challenge.id !== this.lastChallengeId || sessionId !== this.lastSessionId)) {
+        this.lastChallengeId = challenge.id;
+        this.lastSessionId = sessionId;
+        this.attemptedSubmit = false;
         this.form = this.buildForm(challenge);
         this.formSubscription?.unsubscribe();
         this.formSubscription = this.form.valueChanges.subscribe(() => this.persistProgress());
@@ -101,12 +108,18 @@ export class CaptchaComponent implements OnDestroy {
   }
 
   goNext(): void {
+    const challenge = this.currentChallenge();
+    if (!challenge) {
+      return;
+    }
+
+    this.attemptedSubmit = true;
+    this.recordAttempt(challenge);
+
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
-
-    this.persistProgress();
 
     if (this.currentIndex() + 1 >= this.totalSteps()) {
       this.state.markCompleted();
@@ -117,6 +130,19 @@ export class CaptchaComponent implements OnDestroy {
     this.state.goToIndex(this.currentIndex() + 1);
   }
 
+  sanitizeNumberInput(event: Event): void {
+    const target = event.target as HTMLInputElement | null;
+    if (!target) {
+      return;
+    }
+    const sanitized = target.value.replace(/[^0-9]/g, '');
+    if (sanitized !== target.value) {
+      target.value = sanitized;
+      const control = this.form.get('answer') as FormControl<string> | null;
+      control?.setValue(sanitized);
+    }
+  }
+
   errorMessage(): string | null {
     const challenge = this.currentChallenge();
     if (!challenge) {
@@ -125,7 +151,7 @@ export class CaptchaComponent implements OnDestroy {
 
     if (challenge.type === 'image') {
       const control = this.form.get('selections');
-      if (!control || !(control.touched || control.dirty) || !control.errors) {
+      if (!control || !this.attemptedSubmit || !control.errors) {
         return null;
       }
       if (control.errors['required']) {
@@ -138,7 +164,7 @@ export class CaptchaComponent implements OnDestroy {
 
     if (challenge.type === 'math') {
       const control = this.form.get('answer');
-      if (!control || !(control.touched || control.dirty) || !control.errors) {
+      if (!control || !this.attemptedSubmit || !control.errors) {
         return null;
       }
       if (control.errors['required']) {
@@ -151,7 +177,7 @@ export class CaptchaComponent implements OnDestroy {
 
     if (challenge.type === 'text') {
       const control = this.form.get('answer');
-      if (!control || !(control.touched || control.dirty) || !control.errors) {
+      if (!control || !this.attemptedSubmit || !control.errors) {
         return null;
       }
       if (control.errors['required']) {
@@ -204,6 +230,11 @@ export class CaptchaComponent implements OnDestroy {
     this.state.updateProgress(challenge.id, progress);
   }
 
+  private recordAttempt(challenge: Challenge): void {
+    const progress = this.extractProgress(challenge);
+    this.state.recordAttempt(challenge.id, progress);
+  }
+
   private extractProgress(challenge: Challenge): ChallengeProgress {
     if (challenge.type === 'image') {
       const control = this.form.get('selections') as FormControl<string[]> | null;
@@ -226,9 +257,13 @@ export class CaptchaComponent implements OnDestroy {
     const control = this.form.get('answer') as FormControl<string> | null;
     const raw = control?.value ?? '';
     const normalized = raw.trim();
+    if (!normalized) {
+      return { answer: null, correct: false };
+    }
     const correct = normalized.toLowerCase() === challenge.solution.toLowerCase();
     return { answer: normalized, correct };
   }
+
 }
 
 function requiredArray(control: AbstractControl<string[] | null>): ValidationErrors | null {

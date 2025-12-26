@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  margin-top: 1.5rem;
 }
 
 .result-header {
@@ -11,6 +12,10 @@
   display: flex;
   flex-direction: column;
   gap: 1.6rem;
+}
+
+.result-header.fail {
+  background: linear-gradient(120deg, rgba(186, 28, 52, 0.2), rgba(252, 210, 154, 0.15));
 }
 
 .result-header h1 {
@@ -48,6 +53,19 @@
   opacity: 0.2;
   fill: var(--accent-strong);
   stroke: none;
+}
+
+.checkmark.fail {
+  background: rgba(186, 28, 52, 0.15);
+  box-shadow: inset 0 0 0 1px rgba(186, 28, 52, 0.35);
+}
+
+.checkmark.fail svg {
+  stroke: var(--error);
+}
+
+.checkmark.fail circle {
+  fill: var(--error);
 }
 
 .lead {

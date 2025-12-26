@@ -34,9 +34,16 @@ export type Challenge = ImageChallenge | MathChallenge | TextChallenge;
 
 export type ChallengeAnswer = string | number | string[];
 
+export interface ChallengeAttempt {
+  answer: ChallengeAnswer | null;
+  correct: boolean;
+  at: number;
+}
+
 export interface ChallengeProgress {
   answer: ChallengeAnswer | null;
   correct: boolean;
+  attempts?: ChallengeAttempt[];
 }
 
 export interface CaptchaSessionState {

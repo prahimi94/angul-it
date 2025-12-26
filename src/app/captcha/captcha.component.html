@@ -32,7 +32,14 @@
         <p class="equation">{{ math.equation }}</p>
         <label class="field">
           <span>Answer</span>
-          <input type="number" formControlName="answer" placeholder="Enter result" />
+          <input
+            type="text"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            formControlName="answer"
+            placeholder="Enter result"
+            (input)="sanitizeNumberInput($event)"
+          />
         </label>
       </div>
 

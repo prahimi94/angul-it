@@ -1,18 +1,29 @@
 <section class="result-shell">
-  <div class="result-header">
+  <div class="result-header" [class.fail]="!isVerified()">
     <p class="eyebrow">Results</p>
     <div class="headline">
-      <div class="checkmark" aria-hidden="true">
-        <svg viewBox="0 0 52 52" role="img">
+      <div class="checkmark" [class.fail]="!isVerified()" aria-hidden="true">
+        <svg *ngIf="isVerified(); else failIcon" viewBox="0 0 52 52" role="img">
           <circle cx="26" cy="26" r="25" />
           <path d="M16 27.5l6.2 6.2L36 20.2" />
         </svg>
+        <ng-template #failIcon>
+          <svg viewBox="0 0 52 52" role="img">
+            <circle cx="26" cy="26" r="25" />
+            <path d="M17 17l18 18M35 17L17 35" />
+          </svg>
+        </ng-template>
       </div>
       <div>
-        <h1>Verified. You are not a bot.</h1>
-        <p class="lead">
+        <h1>{{ isVerified() ? 'Verified. You are not a bot.' : 'Verification failed.' }}</h1>
+        <p class="lead" *ngIf="isVerified(); else failedMessage">
           Nice work. Your responses are saved in this session. You can start a new run anytime.
         </p>
+        <ng-template #failedMessage>
+          <p class="lead">
+            Your success rate is below {{ minSuccessRate }}%. Please retry to confirm your verification.
+          </p>
+        </ng-template>
       </div>
     </div>
     <div class="stats">
@@ -24,12 +35,16 @@
         </div>
       </div>
       <div class="stat-card">
-        <p class="stat-label">Correct answers</p>
+        <p class="stat-label">Correct attempts</p>
         <p class="stat-value">{{ correctCount() }}</p>
       </div>
       <div class="stat-card">
-        <p class="stat-label">Incorrect answers</p>
+        <p class="stat-label">Incorrect attempts</p>
         <p class="stat-value">{{ incorrectCount() }}</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">Total attempts</p>
+        <p class="stat-value">{{ totalAttempts() }}</p>
       </div>
     </div>
     <button class="primary" type="button" (click)="startOver()">Start a new challenge</button>
@@ -44,6 +59,15 @@
         <p class="answer">
           <span>Answer:</span>
           {{ formatAnswer(session().progress[challenge.id]?.answer ?? null) }}
+        </p>
+        <p class="answer">
+          <span>Attempts:</span>
+          {{ correctAttemptsFor(challenge.id) }} correct /
+          {{ incorrectAttemptsFor(challenge.id) }} incorrect
+        </p>
+        <p class="answer">
+          <span>Success rate:</span>
+          {{ successRateFor(challenge.id) }}%
         </p>
         <p class="status" [class.pass]="isCorrect(challenge.id)">
           {{ isCorrect(challenge.id) ? 'Passed' : 'Needs review' }}

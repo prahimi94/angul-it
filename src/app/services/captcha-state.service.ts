@@ -1,5 +1,12 @@
 import { Injectable, computed, signal } from '@angular/core';
-import { CaptchaSessionState, Challenge, ChallengeProgress } from '../models/captcha.models';
+import {
+  CaptchaSessionState,
+  Challenge,
+  ChallengeProgress,
+  ImageChallenge,
+  MathChallenge,
+  TextChallenge
+} from '../models/captcha.models';
 
 const STORAGE_KEY = 'angul-it-session-v1';
 
@@ -134,13 +141,31 @@ export class CaptchaStateService {
   startNewSession(): void {
     const picked = CHALLENGE_SETS[Math.floor(Math.random() * CHALLENGE_SETS.length)];
     const now = Date.now();
+    const challenges = picked.challenges.map((challenge, index) => {
+      if (challenge.type === 'image') {
+        const cloned: ImageChallenge = {
+          ...challenge,
+          options: [...challenge.options]
+        };
+        return index === 0 ? this.randomizeImageChallenge(cloned) : cloned;
+      }
+      if (challenge.type === 'math') {
+        const cloned: MathChallenge = { ...challenge };
+        return index === 1 ? this.randomizeMathChallenge(cloned) : cloned;
+      }
+      if (challenge.type === 'text') {
+        const cloned: TextChallenge = { ...challenge };
+        return index === 2 ? this.randomizeTextChallenge(cloned) : cloned;
+      }
+      return challenge;
+    });
     const newState: CaptchaSessionState = {
       sessionId: this.generateId(),
       createdAt: now,
       currentIndex: 0,
       completed: false,
       setId: picked.id,
-      challenges: picked.challenges,
+      challenges,
       progress: {}
     };
     this.setState(newState);
@@ -148,11 +173,40 @@ export class CaptchaStateService {
 
   updateProgress(challengeId: string, progress: ChallengeProgress): void {
     const state = this.state();
+    const existing = state.progress[challengeId];
+    const attempts = Array.isArray(existing?.attempts) ? existing.attempts : [];
     const updated: CaptchaSessionState = {
       ...state,
       progress: {
         ...state.progress,
-        [challengeId]: progress
+        [challengeId]: {
+          ...progress,
+          attempts
+        }
+      }
+    };
+    this.setState(updated);
+  }
+
+  recordAttempt(challengeId: string, progress: ChallengeProgress): void {
+    const state = this.state();
+    const existing = state.progress[challengeId];
+    const attempts = Array.isArray(existing?.attempts) ? existing.attempts : [];
+    const updated: CaptchaSessionState = {
+      ...state,
+      progress: {
+        ...state.progress,
+        [challengeId]: {
+          ...progress,
+          attempts: [
+            ...attempts,
+            {
+              answer: progress.answer ?? null,
+              correct: progress.correct,
+              at: Date.now()
+            }
+          ]
+        }
       }
     };
     this.setState(updated);
@@ -219,5 +273,79 @@ export class CaptchaStateService {
       return crypto.randomUUID();
     }
     return `session-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+  }
+
+  private randomizeImageChallenge(challenge: ImageChallenge): ImageChallenge {
+    const correctIds = new Set(challenge.solutionIds);
+    const correct = this.shuffle(challenge.options.filter((option) => correctIds.has(option.id)));
+    const incorrect = this.shuffle(challenge.options.filter((option) => !correctIds.has(option.id)));
+    const minCorrect = Math.min(1, correct.length);
+    const maxCorrect = correct.length;
+    const correctCount = maxCorrect ? this.randomInt(minCorrect, maxCorrect) : 0;
+    const pickedCorrect = correct.slice(0, correctCount);
+    const minIncorrect = Math.min(2, incorrect.length);
+    const maxIncorrect = incorrect.length;
+    const incorrectCount = maxIncorrect
+      ? this.randomInt(minIncorrect || 1, maxIncorrect)
+      : 0;
+    const pickedIncorrect = incorrect.slice(0, incorrectCount);
+    return {
+      ...challenge,
+      solutionIds: pickedCorrect.map((option) => option.id),
+      options: this.shuffle([...pickedCorrect, ...pickedIncorrect])
+    };
+  }
+
+  private randomInt(min: number, max: number): number {
+    const low = Math.ceil(min);
+    const high = Math.floor(max);
+    return Math.floor(Math.random() * (high - low + 1)) + low;
+  }
+
+  private shuffle<T>(items: T[]): T[] {
+    const result = [...items];
+    for (let i = result.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [result[i], result[j]] = [result[j], result[i]];
+    }
+    return result;
+  }
+
+  private randomizeMathChallenge(challenge: MathChallenge): MathChallenge {
+    const equation = challenge.equation.toLowerCase();
+    if (equation.includes('+')) {
+      const a = this.randomInt(6, 24);
+      const b = this.randomInt(3, 18);
+      return {
+        ...challenge,
+        equation: `${a} + ${b}`,
+        solution: a + b
+      };
+    }
+    const a = this.randomInt(3, 12);
+    const b = this.randomInt(2, 10);
+    return {
+      ...challenge,
+      equation: `${a} x ${b}`,
+      solution: a * b
+    };
+  }
+
+  private randomizeTextChallenge(challenge: TextChallenge): TextChallenge {
+    const prompt = challenge.prompt.toLowerCase();
+    const colors = ['amber', 'teal', 'coral', 'olive', 'navy', 'peach'];
+    const words = ['angular', 'forest', 'nebula', 'canvas', 'vertex', 'signal'];
+    const word = prompt.includes('color')
+      ? colors[Math.floor(Math.random() * colors.length)]
+      : words[Math.floor(Math.random() * words.length)];
+    const updatedPrompt = prompt.includes('color')
+      ? `Type the color '${word}'`
+      : `Type the word '${word}'`;
+    return {
+      ...challenge,
+      prompt: updatedPrompt,
+      placeholder: 'Enter the word',
+      solution: word
+    };
   }
 }
