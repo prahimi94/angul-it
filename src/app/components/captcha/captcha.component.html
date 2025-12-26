@@ -51,7 +51,11 @@
       </div>
     </form>
 
-    <p class="error" *ngIf="errorMessage() as message">{{ message }}</p>
+    <div class="toast-stack" *ngIf="toastQueue.length > 0" aria-live="polite">
+      <div class="toast" *ngFor="let message of toastQueue" role="alert">
+        {{ message }}
+      </div>
+    </div>
 
     <div class="actions">
       <button class="ghost" type="button" (click)="goBack()" [disabled]="currentIndex() === 0">

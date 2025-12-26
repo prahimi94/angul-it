@@ -39,8 +39,7 @@ export class CaptchaComponent implements OnDestroy {
   private readonly router = inject(Router);
   private lastChallengeId: string | null = null;
   private lastSessionId: string | null = null;
-  private attemptedSubmit = false;
-  private lastErrorMessage: string | null = null;
+  readonly toastQueue: string[] = [];
 
   readonly session = this.state.session;
   readonly currentChallenge = this.state.currentChallenge;
@@ -71,8 +70,7 @@ export class CaptchaComponent implements OnDestroy {
       if (challenge && (challenge.id !== this.lastChallengeId || sessionId !== this.lastSessionId)) {
         this.lastChallengeId = challenge.id;
         this.lastSessionId = sessionId;
-        this.attemptedSubmit = false;
-        this.lastErrorMessage = null;
+        this.toastQueue.length = 0;
         this.form = this.buildForm(challenge);
         this.formSubscription?.unsubscribe();
         this.formSubscription = this.form.valueChanges.subscribe(() => this.persistProgress());
@@ -115,16 +113,15 @@ export class CaptchaComponent implements OnDestroy {
       return;
     }
 
-    this.attemptedSubmit = true;
     this.recordAttempt(challenge);
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.lastErrorMessage = this.resolveErrorMessage(challenge);
+      this.enqueueToast(this.resolveErrorMessage(challenge));
       return;
     }
 
-    this.lastErrorMessage = null;
+    this.toastQueue.length = 0;
 
     if (this.currentIndex() + 1 >= this.totalSteps()) {
       this.state.markCompleted();
@@ -146,14 +143,6 @@ export class CaptchaComponent implements OnDestroy {
       const control = this.form.get('answer') as FormControl<string> | null;
       control?.setValue(sanitized);
     }
-  }
-
-  errorMessage(): string | null {
-    const challenge = this.currentChallenge();
-    if (!challenge || !this.attemptedSubmit) {
-      return null;
-    }
-    return this.lastErrorMessage;
   }
 
   private resolveErrorMessage(challenge: Challenge): string | null {
@@ -198,6 +187,20 @@ export class CaptchaComponent implements OnDestroy {
 
     return null;
   }
+
+  private enqueueToast(message: string | null): void {
+    if (!message) {
+      return;
+    }
+    this.toastQueue.push(message);
+    window.setTimeout(() => {
+      const index = this.toastQueue.indexOf(message);
+      if (index !== -1) {
+        this.toastQueue.splice(index, 1);
+      }
+    }, 3000);
+  }
+
 
   private buildForm(challenge: Challenge): FormGroup {
     const saved = this.session().progress[challenge.id];
