@@ -67,6 +67,16 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.image-tile.has-icon {
+  align-items: center;
+  text-align: center;
+}
+
+.tile-icon {
+  width: clamp(42px, 6vw, 72px);
+  height: clamp(42px, 6vw, 72px);
+  object-fit: contain;
+}
 .image-tile:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 20px rgba(24, 83, 77, 0.18);

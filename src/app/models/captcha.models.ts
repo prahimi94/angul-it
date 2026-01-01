@@ -4,6 +4,7 @@ export interface ImageOption {
   id: string;
   label: string;
   detail: string;
+  icon?: string;
 }
 
 export interface BaseChallenge {

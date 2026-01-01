@@ -8,116 +8,59 @@ import {
   TextChallenge
 } from '../models/captcha.models';
 
-const STORAGE_KEY = 'angul-it-session-v1';
+const STORAGE_KEY = 'angul-it-session-v2';
 
-const CHALLENGE_SETS: { id: string; challenges: Challenge[] }[] = [
+const IMAGE_CHALLENGE_TEMPLATES: ImageChallenge[] = [
   {
-    id: 'forest-math-text',
-    challenges: [
-      {
-        id: 'img-trees',
-        type: 'image',
-        prompt: "Select all tiles labeled 'Tree'",
-        options: [
-          { id: 't1', label: 'Tree', detail: 'Pine' },
-          { id: 't2', label: 'Car', detail: 'Sedan' },
-          { id: 't3', label: 'Tree', detail: 'Oak' },
-          { id: 't4', label: 'House', detail: 'Brick' },
-          { id: 't5', label: 'Tree', detail: 'Maple' },
-          { id: 't6', label: 'Cloud', detail: 'Cirrus' },
-          { id: 't7', label: 'River', detail: 'Stream' },
-          { id: 't8', label: 'Tree', detail: 'Cedar' },
-          { id: 't9', label: 'Bridge', detail: 'Steel' }
-        ],
-        solutionIds: ['t1', 't3', 't5', 't8']
-      },
-      {
-        id: 'math-19',
-        type: 'math',
-        prompt: 'Solve the sum to proceed',
-        equation: '12 + 7',
-        solution: 19
-      },
-      {
-        id: 'text-angular',
-        type: 'text',
-        prompt: "Type the word 'angular'",
-        placeholder: 'Enter the word',
-        solution: 'angular'
-      }
-    ]
+    id: 'img-trees',
+    type: 'image',
+    prompt: "Select all 'Tree' tiles",
+    options: [
+      { id: 't1', label: 'Tree', detail: 'Pine', icon: 'assets/icons/trees/t1.png' },
+      { id: 't2', label: 'Car', detail: 'Sedan', icon: 'assets/icons/trees/t2.png' },
+      { id: 't3', label: 'Tree', detail: 'Oak', icon: 'assets/icons/trees/t3.png' },
+      { id: 't4', label: 'House', detail: 'Brick', icon: 'assets/icons/trees/t4.png' },
+      { id: 't5', label: 'Tree', detail: 'Maple', icon: 'assets/icons/trees/t5.png' },
+      { id: 't6', label: 'Cloud', detail: 'Cirrus', icon: 'assets/icons/trees/t6.png' },
+      { id: 't7', label: 'River', detail: 'Stream', icon: 'assets/icons/trees/t7.png' },
+      { id: 't8', label: 'Tree', detail: 'Cedar', icon: 'assets/icons/trees/t8.png' },
+      { id: 't9', label: 'Bridge', detail: 'Steel', icon: 'assets/icons/trees/t9.png' }
+    ],
+    solutionIds: ['t1', 't3', 't5', 't8']
   },
   {
-    id: 'city-math-text',
-    challenges: [
-      {
-        id: 'img-bikes',
-        type: 'image',
-        prompt: "Select all tiles labeled 'Bike'",
-        options: [
-          { id: 'b1', label: 'Bike', detail: 'Road' },
-          { id: 'b2', label: 'Bus', detail: 'Transit' },
-          { id: 'b3', label: 'Bike', detail: 'Cargo' },
-          { id: 'b4', label: 'Taxi', detail: 'Cab' },
-          { id: 'b5', label: 'Bike', detail: 'Hybrid' },
-          { id: 'b6', label: 'Train', detail: 'Metro' },
-          { id: 'b7', label: 'Bike', detail: 'Trail' },
-          { id: 'b8', label: 'Truck', detail: 'Delivery' },
-          { id: 'b9', label: 'Boat', detail: 'Ferry' }
-        ],
-        solutionIds: ['b1', 'b3', 'b5', 'b7']
-      },
-      {
-        id: 'math-27',
-        type: 'math',
-        prompt: 'Solve the multiplication to proceed',
-        equation: '9 x 3',
-        solution: 27
-      },
-      {
-        id: 'text-amber',
-        type: 'text',
-        prompt: "Type the color 'amber'",
-        placeholder: 'Enter the color',
-        solution: 'amber'
-      }
-    ]
+    id: 'img-bikes',
+    type: 'image',
+    prompt: "Select all 'Bike' tiles",
+    options: [
+      { id: 'b1', label: 'Bike', detail: 'Road', icon: 'assets/icons/bikes/b1.png' },
+      { id: 'b2', label: 'Bus', detail: 'Transit', icon: 'assets/icons/bikes/b2.png' },
+      { id: 'b3', label: 'Bike', detail: 'Cargo', icon: 'assets/icons/bikes/b3.png' },
+      { id: 'b4', label: 'Taxi', detail: 'Cab', icon: 'assets/icons/bikes/b4.png' },
+      { id: 'b5', label: 'Bike', detail: 'Hybrid', icon: 'assets/icons/bikes/b5.png' },
+      { id: 'b6', label: 'Train', detail: 'Metro', icon: 'assets/icons/bikes/b6.png' },
+      { id: 'b7', label: 'Bike', detail: 'Trail', icon: 'assets/icons/bikes/b7.png' },
+      { id: 'b8', label: 'Truck', detail: 'Delivery', icon: 'assets/icons/bikes/b8.png' },
+      { id: 'b9', label: 'Boat', detail: 'Ferry', icon: 'assets/icons/bikes/b9.png' }
+    ],
+    solutionIds: ['b1', 'b3', 'b5', 'b7']
   },
   {
-    id: 'sky-math-text',
-    challenges: [
-      {
-        id: 'img-clouds',
-        type: 'image',
-        prompt: "Select all tiles labeled 'Cloud'",
-        options: [
-          { id: 'c1', label: 'Cloud', detail: 'Fluffy' },
-          { id: 'c2', label: 'Star', detail: 'Bright' },
-          { id: 'c3', label: 'Cloud', detail: 'Layered' },
-          { id: 'c4', label: 'Moon', detail: 'Crescent' },
-          { id: 'c5', label: 'Cloud', detail: 'Stormy' },
-          { id: 'c6', label: 'Sun', detail: 'Warm' },
-          { id: 'c7', label: 'Cloud', detail: 'High' },
-          { id: 'c8', label: 'Plane', detail: 'Jet' },
-          { id: 'c9', label: 'Hill', detail: 'Rolling' }
-        ],
-        solutionIds: ['c1', 'c3', 'c5', 'c7']
-      },
-      {
-        id: 'math-42',
-        type: 'math',
-        prompt: 'Solve the equation to proceed',
-        equation: '6 x 7',
-        solution: 42
-      },
-      {
-        id: 'text-sunset',
-        type: 'text',
-        prompt: "Type the word 'sunset'",
-        placeholder: 'Enter the word',
-        solution: 'sunset'
-      }
-    ]
+    id: 'img-clouds',
+    type: 'image',
+    prompt: "Select all 'Cloud' tiles",
+    options: [
+      { id: 'c1', label: 'Cloud', detail: 'Fluffy', icon: 'assets/icons/clouds/c1.png' },
+      { id: 'c2', label: 'Star', detail: 'Bright', icon: 'assets/icons/clouds/c2.png' },
+      { id: 'c3', label: 'Cloud', detail: 'Layered', icon: 'assets/icons/clouds/c3.png' },
+      { id: 'c4', label: 'Moon', detail: 'Crescent', icon: 'assets/icons/clouds/c4.png' },
+      { id: 'c5', label: 'Cloud', detail: 'Stormy', icon: 'assets/icons/clouds/c5.png' },
+      { id: 'c6', label: 'Sun', detail: 'Warm', icon: 'assets/icons/clouds/c6.png' },
+      { id: 'c7', label: 'Cloud', detail: 'High', icon: 'assets/icons/clouds/c7.png' },
+      { id: 'c8', label: 'Plane', detail: 'Jet', icon: 'assets/icons/clouds/c8.png' },
+      { id: 'c9', label: 'Hill', detail: 'Rolling', icon: 'assets/icons/clouds/c9.png' }
+    ],
+    solutionIds: ['c1', 'c3', 'c5', 'c7']
   }
 ];
 
@@ -139,9 +82,8 @@ export class CaptchaStateService {
   }
 
   startNewSession(): void {
-    const picked = CHALLENGE_SETS[Math.floor(Math.random() * CHALLENGE_SETS.length)];
     const now = Date.now();
-    const challenges = picked.challenges.map((challenge, index) => {
+    const challenges = this.buildChallenges().map((challenge, index) => {
       if (challenge.type === 'image') {
         const cloned: ImageChallenge = {
           ...challenge,
@@ -164,7 +106,7 @@ export class CaptchaStateService {
       createdAt: now,
       currentIndex: 0,
       completed: false,
-      setId: picked.id,
+      setId: 'dynamic',
       challenges,
       progress: {}
     };
@@ -312,40 +254,69 @@ export class CaptchaStateService {
   }
 
   private randomizeMathChallenge(challenge: MathChallenge): MathChallenge {
-    const equation = challenge.equation.toLowerCase();
-    if (equation.includes('+')) {
-      const a = this.randomInt(6, 24);
-      const b = this.randomInt(3, 18);
-      return {
-        ...challenge,
-        equation: `${a} + ${b}`,
-        solution: a + b
-      };
+    const operators = ['+', '-', 'x'];
+    const operator = operators[Math.floor(Math.random() * operators.length)];
+    let a = this.randomInt(0, 9);
+    let b = this.randomInt(0, 9);
+    if (operator === '-') {
+      if (b > a) {
+        [a, b] = [b, a];
+      }
     }
-    const a = this.randomInt(3, 12);
-    const b = this.randomInt(2, 10);
+    const solution =
+      operator === '+'
+        ? a + b
+        : operator === '-'
+          ? a - b
+          : a * b;
     return {
       ...challenge,
-      equation: `${a} x ${b}`,
-      solution: a * b
+      prompt: 'Solve the equation to proceed',
+      equation: `${a} ${operator} ${b}`,
+      solution
     };
   }
 
   private randomizeTextChallenge(challenge: TextChallenge): TextChallenge {
-    const prompt = challenge.prompt.toLowerCase();
-    const colors = ['amber', 'teal', 'coral', 'olive', 'navy', 'peach'];
-    const words = ['angular', 'forest', 'nebula', 'canvas', 'vertex', 'signal'];
-    const word = prompt.includes('color')
-      ? colors[Math.floor(Math.random() * colors.length)]
-      : words[Math.floor(Math.random() * words.length)];
-    const updatedPrompt = prompt.includes('color')
-      ? `Type the color '${word}'`
-      : `Type the word '${word}'`;
+    const length = this.randomInt(5, 8);
+    const word = this.randomLetters(length);
+    const updatedPrompt = `Type the word '${word}'`;
     return {
       ...challenge,
       prompt: updatedPrompt,
       placeholder: 'Enter the word',
       solution: word
     };
+  }
+
+  private buildChallenges(): Challenge[] {
+    const pickedImage =
+      IMAGE_CHALLENGE_TEMPLATES[Math.floor(Math.random() * IMAGE_CHALLENGE_TEMPLATES.length)];
+    return [
+      { ...pickedImage, options: [...pickedImage.options], solutionIds: [...pickedImage.solutionIds] },
+      {
+        id: 'math-random',
+        type: 'math',
+        prompt: 'Solve the equation to proceed',
+        equation: '0 + 0',
+        solution: 0
+      },
+      {
+        id: 'text-random',
+        type: 'text',
+        prompt: "Type the word 'random'",
+        placeholder: 'Enter the word',
+        solution: 'random'
+      }
+    ];
+  }
+
+  private randomLetters(length: number): string {
+    const letters = 'abcdefghijklmnopqrstuvwxyz';
+    let result = '';
+    for (let i = 0; i < length; i += 1) {
+      result += letters[Math.floor(Math.random() * letters.length)];
+    }
+    return result;
   }
 }

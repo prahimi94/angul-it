@@ -20,10 +20,12 @@
             type="button"
             *ngFor="let option of image.options"
             [class.selected]="isSelected(option.id)"
+            [class.has-icon]="option.icon"
             (click)="toggleSelection(option.id)"
           >
-            <span class="tile-label">{{ option.label }}</span>
-            <span class="tile-detail">{{ option.detail }}</span>
+            <img *ngIf="option.icon" class="tile-icon" [src]="option.icon" [alt]="option.label" />
+            <span class="tile-label" *ngIf="!option.icon">{{ option.label }}</span>
+            <span class="tile-detail" *ngIf="!option.icon">{{ option.detail }}</span>
           </button>
         </div>
       </div>
