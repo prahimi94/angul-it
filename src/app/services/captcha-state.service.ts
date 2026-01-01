@@ -106,7 +106,6 @@ export class CaptchaStateService {
       createdAt: now,
       currentIndex: 0,
       completed: false,
-      setId: 'dynamic',
       challenges,
       progress: {}
     };
@@ -184,7 +183,6 @@ export class CaptchaStateService {
       createdAt: 0,
       currentIndex: 0,
       completed: false,
-      setId: '',
       challenges: [],
       progress: {}
     };

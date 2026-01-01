@@ -52,7 +52,6 @@ export interface CaptchaSessionState {
   createdAt: number;
   currentIndex: number;
   completed: boolean;
-  setId: string;
   challenges: Challenge[];
   progress: Record<string, ChallengeProgress>;
 }
