@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { animate, style, transition, trigger } from '@angular/animations';
 import { Router } from '@angular/router';
 import { ChallengeAttempt } from '../../models/captcha.models';
 import { CaptchaStateService } from '../../services/captcha-state.service';
@@ -9,7 +10,19 @@ import { CaptchaStateService } from '../../services/captcha-state.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './result.component.html',
-  styleUrl: './result.component.css'
+  styleUrl: './result.component.css',
+  animations: [
+    trigger('resultFade', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(12px)' }),
+        animate('680ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ]),
+      transition(':leave', [
+        animate('560ms ease-in', style({ opacity: 0, transform: 'translateY(-12px)' }))
+      ]),
+      transition(':leave', [animate('360ms ease-in', style({ opacity: 0 }))])
+    ])
+  ]
 })
 export class ResultComponent {
   private readonly state = inject(CaptchaStateService);

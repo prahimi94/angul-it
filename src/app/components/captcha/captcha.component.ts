@@ -25,10 +25,14 @@ import { Challenge, ChallengeProgress } from '../../models/captcha.models';
     trigger('stepTransition', [
       transition(':enter', [
         style({ opacity: 0, transform: 'translateY(12px)' }),
-        animate('260ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+        animate('680ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
       ]),
       transition(':leave', [
-        animate('200ms ease-in', style({ opacity: 0, transform: 'translateY(-12px)' }))
+        animate('560ms ease-in', style({ opacity: 0, transform: 'translateY(-12px)' }))
+      ]),
+      transition('* <=> *', [
+        style({ opacity: 0.2, transform: 'translateY(8px)' }),
+        animate('840ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
       ])
     ])
   ]
@@ -198,7 +202,7 @@ export class CaptchaComponent implements OnDestroy {
       if (index !== -1) {
         this.toastQueue.splice(index, 1);
       }
-    }, 3000);
+    }, 3600);
   }
 
 

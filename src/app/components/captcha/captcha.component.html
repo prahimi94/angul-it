@@ -10,7 +10,7 @@
     </div>
   </div>
 
-  <div class="challenge-card" [@stepTransition]>
+  <div class="challenge-card" [@stepTransition]="challenge.id">
     <form [formGroup]="form">
       <div class="image-select" *ngIf="imageChallenge() as image">
         <p class="instructions">Tap each tile that matches the label.</p>
