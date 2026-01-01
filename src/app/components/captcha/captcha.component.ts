@@ -129,7 +129,7 @@ export class CaptchaComponent implements OnDestroy {
 
     if (this.currentIndex() + 1 >= this.totalSteps()) {
       this.state.markCompleted();
-      this.router.navigate(['/result']);
+      this.router.navigate(['/result'], { replaceUrl: true });
       return;
     }
 

@@ -8,7 +8,7 @@ import {
   TextChallenge
 } from '../models/captcha.models';
 
-const STORAGE_KEY = 'angul-it-session-v2';
+const STORAGE_KEY = 'angul-it-session';
 
 const IMAGE_CHALLENGE_TEMPLATES: ImageChallenge[] = [
   {
